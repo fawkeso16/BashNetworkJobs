@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#format
+#--- 200.160.4.6 ping statistics ---
+#5 packets transmitted, 5 received, 0% packet loss, time 4006ms
+#rtt min/avg/max/mdev = 181.280/181.895/183.645/0.885 ms
+
+Pretify_Ping(){
+
+	ping -c "$2" "$1" 2>/dev/null | awk -v OFS="," -v location="$3" '
+	
+	/rtt/ {
+		split($4, stats, "/");
+		min=stats[1]; avg=stats[2]; max=stats[3]; mdev=stats[4];
+	}
+	/packets transmitted/ {
+   		 match($0, /([0-9]+) packets transmitted, ([0-9]+) received, ([0-9]+\.?[0-9]*)% packet loss, time ([0-9]+\.?[0-9]*)ms/, p);
+    		transmit = p[1]; 
+    		recieve = p[2]; 
+    		loss = p[3]; 
+   		time = p[4];      
+	}
+
+	END {
+    		print location, transmit, recieve, loss, time, min, avg, max, mdev, "";
+	}' >> task2Output.txt
+	
+}
+
+
+
+Pretify_Ping 23.236.62.147 30 New-Zealand
+Pretify_Ping 200.160.4.6 30 Brazil
+Pretify_Ping 80.76.149.102 30 Sweden 
+Pretify_Ping 185.126.86.2 30 Russia
+
